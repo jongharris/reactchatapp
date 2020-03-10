@@ -14,7 +14,7 @@ io.on('connection', (socket) => {
     console.log('User connected');
     socket.on('join', ({name, room}, callback) => {
         //add user returns either error, or user
-        const {error, user} = addUser({id: socket.id, name, room});
+        const {error, user} = addUser({id: socket.id, name, room, nickColor: '#353535'});
 
         if (error) return callback(error);
 
@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
     });
 
 
-    //sends the message do the entire room
+    //sends the message to the entire room
     socket.on('sendMessage', (message, callback) => {
         const user = getUser(socket.id);
         //get the proper date
@@ -50,7 +50,34 @@ io.on('connection', (socket) => {
             previousMessages.push({user,message});
         }
 
-        io.to(user.room).emit('message', {user: user.name, text: message + ' ' +  date});
+        let index = message.indexOf("/nickcolor ");
+        let colorName;
+        if (index != -1) {
+            colorName = message.substring(index + 11);
+            console.log(colorName);
+
+            //check if valid hex
+            var re = /^[0-9A-Fa-f]{6}$/g;
+            if (re.test(colorName)) {
+                console.log("valid")
+                colorName = "#" + colorName;
+                user.nickColor = colorName;
+            }
+        }
+
+        let nameIndex = message.indexOf("/nick ");
+        if (nameIndex != -1) {
+            let userList = getUsersInRoom(user.room);
+            console.log(userList);
+            let nameToCheck = message.substring(nameIndex + 6);
+            let result = userList.filter((name) => nameToCheck === name.name)
+
+            if(result.length === 0) {
+                user.name = nameToCheck;
+            }
+        }
+
+        io.to(user.room).emit('message', {user: user.name, text: message + ' ' +  date, nickColor: user.nickColor});
         io.to(user.room).emit('roomData', {room: user.room, users: getUsersInRoom(user.room)});
 
         //do something on frontend after message is sent

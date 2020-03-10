@@ -2,7 +2,7 @@
 
 const users = [];
 
-const addUser = ({id, name, room}) => {
+const addUser = ({id, name, room, nickColor}) => {
     //set up name and room, trim whitespace, put to lower case
     name = name.trim().toLowerCase();
     room = room.trim().toLowerCase();
@@ -12,7 +12,7 @@ const addUser = ({id, name, room}) => {
         return {error: "Username taken"};
     }
 
-    const user = {id, name, room};
+    const user = {id, name, room, nickColor};
     users.push(user);
 
     return {user};

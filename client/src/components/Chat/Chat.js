@@ -33,7 +33,7 @@ const Chat = ({location}) => {
         socket.emit('join', {name, room}, () => {
           
         }); 
-        //for disconnects (unmounbting)
+        //for disconnects (unmounting)
         return () => {
             //disconnect function in server side
             socket.emit('disconnect')
@@ -63,13 +63,12 @@ const Chat = ({location}) => {
             socket.emit('sendMessage', message, () => setMessage(''));  
      }
     }
-
     console.log(message, messages);
-
+ 
     return (
         <div className = "outerContainer">
             <div className = "container">
-                <InfoBar room={room} />
+                <InfoBar room={room} name={name} />
                 <Messages messages = {messages} name = {name} />
                 <Input message = {message} setMessage ={setMessage} sendMessage = {sendMessage} />
             </div>
